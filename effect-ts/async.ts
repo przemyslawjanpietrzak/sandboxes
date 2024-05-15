@@ -15,13 +15,15 @@ const program = pipe(
         const state = yield* ValueState
         const value = yield* Ref.get(state) 
 
-        console.log('value: ', value)
-
         return value as number
     })),
-    Effect.flatMap(value => Effect.promise(() => loadData(value)))
+    Effect.flatMap(value => Effect.promise(() => loadData(value))),
+    Effect.flatMap(value => Effect.promise(() => loadData(value))),
+    Effect.tap(x => Effect.log(x)),
 );
 
-const runnable = Effect.provideServiceEffect(program, ValueState, Ref.make(0))
+const runnable = program.pipe(
+    Effect.provideServiceEffect(ValueState, Ref.make(0)),
+);
 
 Effect.runPromise(runnable);
